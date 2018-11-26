@@ -18,15 +18,15 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		if not os.path.isfile(path_from):
 			print("Path 'from' is not a file: ", path_from)
 			return False
-			
-		path_from_mtime = int(os.path.getmtime(path_from))
-		path_from_mtime = datetime.datetime.fromtimestamp(path_from_mtime)
-		path_from_mtime = path_from_mtime.astimezone(tzutc)
 		
 		if os.path.exists(path_to):
 			if not os.path.isfile(path_to):
 				print("Path 'to' is not a file: ", path_to)
 				return False			
+			
+			path_from_mtime = int(os.path.getmtime(path_from))
+			path_from_mtime = datetime.datetime.fromtimestamp(path_from_mtime)
+			path_from_mtime = path_from_mtime.astimezone(tzutc)
 			
 			path_to_mtime = int(os.path.getmtime(path_to))
 			path_to_mtime = datetime.datetime.fromtimestamp(path_to_mtime)
@@ -37,22 +37,18 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				shutil.copy(path_from, path_to)
 				
 		else:
-			# p = os.path.dirname(path_to)
 			f_path, f_name = os.path.split(path_to)
-			# print(f_name)
-			if f_name == "":
+			if f_name == "": # for example, if path_to = 'dir1\dir2\'
 				print("Path 'to' is incorrect: ", path_to)
 				return False
 			
-			# print(f_path)
 			if os.path.exists(f_path):
 				if not os.path.isdir(f_path):
 					print("Path: '" + f_path + "' is not a directory to write file: '" + f_name + "'. \n(May be '" + os.path.basename(f_path) + "' it is already existing file?)")
-					return False					
+					return False
 			else:
 				print("Create path: ", f_path)
 				os.makedirs(f_path)
-				
 				
 			print("file-file: write")
 			shutil.copy(path_from, path_to)
@@ -122,13 +118,15 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			
 	return True
 
+dir_from = r"test_dir_from"
 dir_from_f1 = r"test_dir_from\myfile.txt"
 dir_from_f2 = r"test_dir_from\myfile2.txt"
-dir_to_f1 = r"test_dir_to\myfile.txt"
-dir_from = r"test_dir_from"
 dir_to = r"test_dir_to"
+dir_to_f1 = r"test_dir_to\myfile.txt"
+dir_to_f1_er = r"test_dir_to\myfile.txt\ddd"
+dir_to_f2 = r"test_dir_to\myfile2.txt"
 dir_to_d3 = r"test_dir_to\dir_3"
-dir_to_d3_er = r"test_dir_to\dir_3\\"
+dir_to_d3_er = "test_dir_to\dir_3\\"
 dir_to_d3_f1 = r"test_dir_to\dir_3\myfile.txt"
 
 a = copy_with_replace_by_date(dir_from_f1, dir_to_d3_f1, "ff")
