@@ -58,7 +58,9 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		pass
 	elif op_type == "df":
 		print("dir-file")
-		pass
+		print("Are you really? It doesn't make sense. =)")
+		return False
+		
 	elif op_type == "dd":
 		print("dir-dir")
 		pass
@@ -129,5 +131,5 @@ dir_to_d3 = r"test_dir_to\dir_3"
 dir_to_d3_er = "test_dir_to\dir_3\\"
 dir_to_d3_f1 = r"test_dir_to\dir_3\myfile.txt"
 
-a = copy_with_replace_by_date(dir_from_f1, dir_to_d3_f1, "ff")
+a = copy_with_replace_by_date(dir_from_f1, dir_to_d3_f1, "df")
 print(a)
