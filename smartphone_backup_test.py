@@ -9,20 +9,31 @@ import shutil
 tzutc = tzutc()
 
 def copy_with_replace_by_date(path_from, path_to, op_type):
+	status = "Ok"
+	msg = ""
+	
 	if not os.path.exists(path_from):
-		print("Path 'from' not found: ", path_from)
-		return False
+		# print("Path 'from' not found: ", path_from)
+		status = "Error!"
+		msg = "Path 'from' not found: '{}'".format(path_from)
+		return {"status": status, "msg": msg}
 	
 	if op_type == "ff":
 		print("file-file")
 		if not os.path.isfile(path_from):
-			print("Path 'from' is not a file: ", path_from)
-			return False
+			# print("Path 'from' is not a file: ", path_from)
+			# return False
+			status = "Error!"
+			msg = "Path 'from' is not a file: '{}'".format(path_from)
+			return {"status": status, "msg": msg}
 		
 		if os.path.exists(path_to):
 			if not os.path.isfile(path_to):
-				print("Path 'to' is not a file: ", path_to)
-				return False			
+				# print("Path 'to' is not a file: ", path_to)
+				# return False
+				status = "Error!"
+				msg = "Path 'to' is not a file: '{}'".format(path_to)
+				return {"status": status, "msg": msg}
 			
 			path_from_mtime = int(os.path.getmtime(path_from))
 			path_from_mtime = datetime.datetime.fromtimestamp(path_from_mtime)
@@ -39,13 +50,19 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		else:
 			f_path, f_name = os.path.split(path_to)
 			if f_name == "": # for example, if path_to = 'dir1\dir2\'
-				print("Path 'to' is incorrect: ", path_to)
-				return False
+				# print("Path 'to' is incorrect: ", path_to)
+				# return False
+				status = "Error!"
+				msg = "Path 'to' is incorrect: '{}'".format(path_to)
+				return {"status": status, "msg": msg}
 			
 			if os.path.exists(f_path):
 				if not os.path.isdir(f_path):
-					print("Path: '" + f_path + "' is not a directory to write file: '" + f_name + "'. \n(May be '" + os.path.basename(f_path) + "' it is already existing file?)")
-					return False
+					# print("Path: '" + f_path + "' is not a directory to write file: '" + f_name + "'. \n(May be '" + os.path.basename(f_path) + "' it is already existing file?)")
+					# return False
+					status = "Error!"
+					msg = "Path: '{0}' is not a directory to write file: '{1}'. \n(May be '{2}' it is already existing file?)".format(f_path, f_name, os.path.basename(f_path))
+					return {"status": status, "msg": msg}					
 			else:
 				print("Create path: ", f_path)
 				os.makedirs(f_path)
@@ -58,15 +75,21 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		pass
 	elif op_type == "df":
 		print("dir-file")
-		print("Are you really? It doesn't make sense. =)")
-		return False
+		# print("Write directory to file? Are you really? It doesn't make sense. =)")
+		# return False
+		status = "Error!"
+		msg = "Write directory to file? Are you really? It doesn't make sense. =)"
+		return {"status": status, "msg": msg}
 		
 	elif op_type == "dd":
 		print("dir-dir")
 		pass
 	else:
-		print("Operation type is undefined: ", op_type)
-		return False
+		# print("Operation type is undefined: ", op_type)
+		# return False
+		status = "Error!"
+		msg = "Operation type is undefined: '{}'".format(op_type)
+		return {"status": status, "msg": msg}
 		
 	# file-file:
 	# if os.path.isfile(path_from):
@@ -118,7 +141,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			# print(p)
 			# shutil.copy(path_from, p)
 			
-	return True
+	return {"status": status, "msg": msg}
 
 dir_from = r"test_dir_from"
 dir_from_f1 = r"test_dir_from\myfile.txt"
@@ -131,5 +154,5 @@ dir_to_d3 = r"test_dir_to\dir_3"
 dir_to_d3_er = "test_dir_to\dir_3\\"
 dir_to_d3_f1 = r"test_dir_to\dir_3\myfile.txt"
 
-a = copy_with_replace_by_date(dir_from_f1, dir_to_d3_f1, "df")
+a = copy_with_replace_by_date(dir_from_f1, dir_to_d3_f1, "ff")
 print(a)
