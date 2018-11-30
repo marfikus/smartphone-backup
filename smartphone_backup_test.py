@@ -30,15 +30,15 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				msg = "Path 'to' is not a file: '{}'".format(path_to)
 				return {"status": status, "msg": msg}
 			
-			path_from_mtime = int(os.path.getmtime(path_from))
-			path_from_mtime = datetime.datetime.fromtimestamp(path_from_mtime)
-			path_from_mtime = path_from_mtime.astimezone(tzutc)
+			mtime_path_from = int(os.path.getmtime(path_from))
+			mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
+			mtime_path_from = mtime_path_from.astimezone(tzutc)
 			
-			path_to_mtime = int(os.path.getmtime(path_to))
-			path_to_mtime = datetime.datetime.fromtimestamp(path_to_mtime)
-			path_to_mtime = path_to_mtime.astimezone(tzutc)
+			mtime_path_to = int(os.path.getmtime(path_to))
+			mtime_path_to = datetime.datetime.fromtimestamp(mtime_path_to)
+			mtime_path_to = mtime_path_to.astimezone(tzutc)
 			
-			if path_from_mtime > path_to_mtime:
+			if mtime_path_from > mtime_path_to:
 				print("file-file: rewrite")
 				shutil.copy(path_from, path_to)	
 		else:
@@ -79,15 +79,15 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			# print(path_to_new)
 			
 			if os.path.exists(path_to_new):
-				path_from_mtime = int(os.path.getmtime(path_from))
-				path_from_mtime = datetime.datetime.fromtimestamp(path_from_mtime)
-				path_from_mtime = path_from_mtime.astimezone(tzutc)
+				mtime_path_from = int(os.path.getmtime(path_from))
+				mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
+				mtime_path_from = mtime_path_from.astimezone(tzutc)
 			
-				path_to_new_mtime = int(os.path.getmtime(path_to_new))
-				path_to_new_mtime = datetime.datetime.fromtimestamp(path_to_new_mtime)
-				path_to_new_mtime = path_to_new_mtime.astimezone(tzutc)
+				mtime_path_to_new = int(os.path.getmtime(path_to_new))
+				mtime_path_to_new = datetime.datetime.fromtimestamp(mtime_path_to_new)
+				mtime_path_to_new = mtime_path_to_new.astimezone(tzutc)
 				
-				if path_from_mtime > path_to_new_mtime:
+				if mtime_path_from > mtime_path_to_new:
 					print("file-dir: rewrite")
 					shutil.copy(path_from, path_to_new)
 			else:
@@ -157,3 +157,4 @@ a = copy_with_replace_by_date(".", dir_to_f1, "dd")
 print(a)
 
 # add copied files counter
+
