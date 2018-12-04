@@ -96,7 +96,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		else:
 			print("'path_to' not exists")
 			print("Create path: ", path_to)
-			os.makedirs(path_to)				
+			os.makedirs(path_to)
 			print("file-dir: write")
 			shutil.copy(path_from, path_to)	
 		
@@ -116,6 +116,13 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		list_path_from = os.listdir(path_from)
 		print(list_path_from)
 		print(len(list_path_from))
+		
+		if len(list_path_from) == 0:
+			# print("path_to: ", path_to)
+			if not os.path.exists(path_to):
+				print("Create path: ", path_to)
+				os.makedirs(path_to)
+		
 		for obj in list_path_from:
 			print(obj)
 			path_from_obj = os.path.join(path_from, obj)
@@ -131,7 +138,10 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				res = copy_with_replace_by_date(path_from_obj, path_to_obj, "dd")
 				print(res)
 			else:
-				print("The object is not supported: ", path_from_obj)
+				# print("The object is not supported: ", path_from_obj)
+				status = "Error!"
+				msg = "The object is not supported: '{}'".format(path_from_obj)
+				return {"status": status, "msg": msg}
 			print("======================")
 			
 			
@@ -153,8 +163,10 @@ dir_to_d3 = r"test_dir_to\dir_3"
 dir_to_d3_er = "test_dir_to\dir_3\\"
 dir_to_d3_f1 = r"test_dir_to\dir_3\myfile.txt"
 
-a = copy_with_replace_by_date(".", dir_to_f1, "dd")
+a = copy_with_replace_by_date("ddd", "test_dir_to\\ddd", "dd")
 print(a)
 
 # add copied files counter
+# fix: copy empty dirs
+# fix: создать каталог, если он не указан в пути назначения (сравнить с хcopy)
 
