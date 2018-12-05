@@ -8,6 +8,25 @@ import shutil
 
 tzutc = tzutc()
 
+def make_dirs(path):
+	# os.mkdir(path)
+	print(path)
+	list_dirs = []
+	while not os.path.exists(path):
+		path, dir_name = os.path.split(path)
+		list_dirs.append(dir_name)
+	
+	list_dirs.reverse()
+	print(path)
+	for i in list_dirs:
+		print(i)
+		path = os.path.join(path, i)
+		path = os.path.normpath(path)
+		print(path)
+		os.mkdir(path)
+		
+	return path
+
 def copy_with_replace_by_date(path_from, path_to, op_type):
 	status = "Ok"
 	msg = ""
