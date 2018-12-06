@@ -89,16 +89,16 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			msg = "Path 'from' is not a file: '{}'".format(path_from)
 			return {"status": status, "msg": msg, "copied_files": copied_files}
 		
+		file_name = os.path.basename(path_from)
+		path_to_new = os.path.join(path_to, file_name)
+		path_to_new = os.path.normpath(path_to_new)
+		# print(path_to_new)
+
 		if os.path.exists(path_to):
 			if not os.path.isdir(path_to):
 				status = "Error!"
 				msg = "Path 'to' is not a directory: '{}'".format(path_to)
 				return {"status": status, "msg": msg, "copied_files": copied_files}
-			
-			file_name = os.path.basename(path_from)
-			path_to_new = os.path.join(path_to, file_name)
-			path_to_new = os.path.normpath(path_to_new)
-			# print(path_to_new)
 			
 			if os.path.exists(path_to_new):
 				mtime_path_from = int(os.path.getmtime(path_from))
@@ -122,7 +122,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			print("Create path: ", path_to)
 			os.makedirs(path_to)
 			print("file-dir: write")
-			shutil.copy(path_from, path_to)
+			shutil.copy(path_from, path_to_new)
 			copied_files += 1
 		
 	elif op_type == "df":
@@ -189,6 +189,6 @@ dir_to_d3 = r"test_dir_to\dir_3"
 dir_to_d3_er = "test_dir_to\dir_3\\"
 dir_to_d3_f1 = r"test_dir_to\dir_3\myfile.txt"
 
-a = copy_with_replace_by_date(dir_from, dir_to, "dd")
+a = copy_with_replace_by_date(r"myfile.txt", r"test_dir_to\eee", "fd")
 print(a)
 

@@ -22,7 +22,7 @@ def make_dirs_yadisk(path):
 	for i in list_dirs:
 		# print(i)
 		path = posixpath.join(path, i)
-		# path = os.path.normpath(path)
+		path = posixpath.normpath(path)
 		# print(path)
 		y.mkdir(path)
 		
@@ -98,40 +98,43 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			msg = "Path 'from' is not a file: '{}'".format(path_from)
 			return {"status": status, "msg": msg, "copied_files": copied_files}
 		
-		if os.path.exists(path_to):
-			if not os.path.isdir(path_to):
+		file_name = os.path.basename(path_from)
+		path_to_new = posixpath.join(path_to, file_name)
+		path_to_new = posixpath.normpath(path_to_new)
+		# print(path_to_new)
+		
+		if y.exists(path_to):
+			if not y.is_dir(path_to):
 				status = "Error!"
 				msg = "Path 'to' is not a directory: '{}'".format(path_to)
 				return {"status": status, "msg": msg, "copied_files": copied_files}
 			
-			file_name = os.path.basename(path_from)
-			path_to_new = os.path.join(path_to, file_name)
-			path_to_new = os.path.normpath(path_to_new)
-			# print(path_to_new)
-			
-			if os.path.exists(path_to_new):
+			if y.exists(path_to_new):
 				mtime_path_from = int(os.path.getmtime(path_from))
 				mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 				mtime_path_from = mtime_path_from.astimezone(tzutc)
 			
-				mtime_path_to_new = int(os.path.getmtime(path_to_new))
-				mtime_path_to_new = datetime.datetime.fromtimestamp(mtime_path_to_new)
+				mtime_path_to_new = y.get_meta(path_to_new, fields={"modified"})["modified"]
 				mtime_path_to_new = mtime_path_to_new.astimezone(tzutc)
 				
 				if mtime_path_from > mtime_path_to_new:
 					print("file-dir: rewrite")
-					shutil.copy(path_from, path_to_new)
+					# shutil.copy(path_from, path_to_new)
+					y.upload(path_from, path_to_new, overwrite=True)
 					copied_files += 1
 			else:
 				print("file-dir: write")
-				shutil.copy(path_from, path_to_new)
+				# shutil.copy(path_from, path_to_new)
+				y.upload(path_from, path_to_new)
 				copied_files += 1
 		else:
 			print("'path_to' not exists")
 			print("Create path: ", path_to)
-			os.makedirs(path_to)
+			# os.makedirs(path_to)
+			make_dirs_yadisk(path_to)
 			print("file-dir: write")
-			shutil.copy(path_from, path_to)
+			# shutil.copy(path_from, path_to)
+			y.upload(path_from, path_to_new)
 			copied_files += 1
 		
 	elif op_type == "df":
