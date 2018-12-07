@@ -40,7 +40,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		return {"status": status, "msg": msg, "copied_files": copied_files}
 	
 	if op_type == "ff":
-		print("file-file")
+		# print("file-file")
 		if not os.path.isfile(path_from):
 			status = "Error!"
 			msg = "Path 'from' is not a file: '{}'".format(path_from)
@@ -55,13 +55,13 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			mtime_path_from = int(os.path.getmtime(path_from))
 			mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 			mtime_path_from = mtime_path_from.astimezone(tzutc)
-			print(mtime_path_from)
+			# print(mtime_path_from)
 			
 			# mtime_path_to = int(os.path.getmtime(path_to))
 			# mtime_path_to = datetime.datetime.fromtimestamp(mtime_path_to)
 			mtime_path_to = y.get_meta(path_to, fields={"modified"})["modified"]
 			mtime_path_to = mtime_path_to.astimezone(tzutc)
-			print(mtime_path_to)
+			# print(mtime_path_to)
 			
 			if mtime_path_from > mtime_path_to:
 				print("file-file: rewrite")
@@ -92,7 +92,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			copied_files += 1
 	
 	elif op_type == "fd":
-		print("file-dir")
+		# print("file-dir")
 		if not os.path.isfile(path_from):
 			status = "Error!"
 			msg = "Path 'from' is not a file: '{}'".format(path_from)
@@ -128,7 +128,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				y.upload(path_from, path_to_new)
 				copied_files += 1
 		else:
-			print("'path_to' not exists")
+			# print("'path_to' not exists")
 			print("Create path: ", path_to)
 			# os.makedirs(path_to)
 			make_dirs_yadisk(path_to)
@@ -144,35 +144,36 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		return {"status": status, "msg": msg, "copied_files": copied_files}
 		
 	elif op_type == "dd":
-		print("dir-dir")
+		# print("dir-dir")
 		if not os.path.isdir(path_from):
 			status = "Error!"
 			msg = "Path 'from' is not a directory: '{}'".format(path_from)
 			return {"status": status, "msg": msg, "copied_files": copied_files}
 
 		list_path_from = os.listdir(path_from)
-		print("list_path_from: ", list_path_from)
-		print("len(list_path_from): ", len(list_path_from))
+		# print("list_path_from: ", list_path_from)
+		# print("len(list_path_from): ", len(list_path_from))
 		
 		if len(list_path_from) == 0:
 			# print("path_to: ", path_to)
-			if not os.path.exists(path_to):
+			if not y.exists(path_to):
 				print("Create path: ", path_to)
-				os.makedirs(path_to)
+				# os.makedirs(path_to)
+				make_dirs_yadisk(path_to)
 		
 		for obj in list_path_from:
 			print("obj: ", obj)
 			path_from_obj = os.path.join(path_from, obj)
 			path_from_obj = os.path.normpath(path_from_obj)
 			if os.path.isfile(path_from_obj):
-				print("file")
+				# print("file")
 				res = copy_with_replace_by_date(path_from_obj, path_to, "fd")
 				print(res)
 				copied_files += res["copied_files"]
 			elif os.path.isdir(path_from_obj):
-				print("dir")
-				path_to_obj = os.path.join(path_to, obj)
-				path_to_obj = os.path.normpath(path_to_obj)
+				# print("dir")
+				path_to_obj = posixpath.join(path_to, obj)
+				path_to_obj = posixpath.normpath(path_to_obj)
 				res = copy_with_replace_by_date(path_from_obj, path_to_obj, "dd")
 				print(res)
 				copied_files += res["copied_files"]
@@ -181,7 +182,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				status = "Error!"
 				msg = "The object is not supported: '{}'".format(path_from_obj)
 				return {"status": status, "msg": msg, "copied_files": copied_files}
-			print("======================")
+			print("-----------------------------------------------")
 			
 	else:
 		status = "Error!"
@@ -199,13 +200,10 @@ if not y.check_token():
 	quit()
 
 for i in mid.list_of_paths:
-	print("--------------------------------------------")
+	print("===============================================")
 	print(i)
 	res = copy_with_replace_by_date(i[0], i[1], i[2])
 	print(res)
-	print("--------------------------------------------")
+	print("===============================================")
 
-# make_dirs_yadisk(r"/Applications/smartphone_backup/1/22")	
-	
-# со слешами разобраться
 # проверить: если нет сети во время копирования
