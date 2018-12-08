@@ -191,8 +191,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			
 	return {"status": status, "msg": msg, "copied_files": copied_files}
 
-# проверить сеть!!!
-
+	
 y = yadisk.YaDisk(token=mid.token)
 
 if not y.check_token():
@@ -206,4 +205,3 @@ for i in mid.list_of_paths:
 	print(res)
 	print("===============================================")
 
-# проверить: если нет сети во время копирования
