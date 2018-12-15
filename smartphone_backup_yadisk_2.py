@@ -32,7 +32,7 @@ def make_dirs_yadisk(path):
 
 	
 def check_file_in_local_db(path, mtime):
-	print("check:")
+	# print("check:")
 	file_name_local_db = "local_db"
 	# global local_db
 	local_db = {}
@@ -48,8 +48,8 @@ def check_file_in_local_db(path, mtime):
 	local_db = pickle.load(f)
 	f.close()
 	
-	for i in local_db:
-		print(i, local_db[i])
+	# for i in local_db:
+		# print(i, local_db[i])
 	print("path: ", path)
 	
 	if path not in local_db:
@@ -57,13 +57,9 @@ def check_file_in_local_db(path, mtime):
 		# return False
 		status = False
 		return {"status": status, "local_db": local_db}
-		
-	# mtime_path_from = int(os.path.getmtime(path))
-	# mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
-	# mtime_path_from = mtime_path_from.astimezone(tzutc)
 	
 	mtime_from_db = local_db[path]
-	print("mtime_from_db: ", mtime_from_db)
+	# print("mtime_from_db: ", mtime_from_db)
 	
 	if mtime > mtime_from_db:
 		print("rewrite is necessary!")
@@ -76,18 +72,15 @@ def check_file_in_local_db(path, mtime):
 
 	
 def write_file_to_local_db(path, mtime, local_db):
-	print("write to db:")
+	# print("write to db:")
 	file_name_local_db = "local_db"
-	
-	# if not os.path.exists(file_name_local_db):
-		# local_db = {}
 
 	local_db[path] = mtime
-	
-	for i in local_db:
-		print(i, local_db[i])
-
 	# local_db.update(path=mtime)
+	
+	# for i in local_db:
+		# print(i, local_db[i])
+
 	f = open(file_name_local_db, "wb")
 	pickle.dump(local_db, f)
 	f.close()
@@ -126,13 +119,6 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				msg = "Path 'to' is not a file: '{}'".format(path_to)
 				return {"status": status, "msg": msg, "copied_files": copied_files}
 			
-			# mtime_path_from = int(os.path.getmtime(path_from))
-			# mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
-			# mtime_path_from = mtime_path_from.astimezone(tzutc)
-			# print(mtime_path_from)
-			
-			# mtime_path_to = int(os.path.getmtime(path_to))
-			# mtime_path_to = datetime.datetime.fromtimestamp(mtime_path_to)
 			mtime_path_to = y.get_meta(path_to, fields={"modified"})["modified"]
 			mtime_path_to = mtime_path_to.astimezone(tzutc)
 			# print(mtime_path_to)
@@ -183,7 +169,6 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		check_file_result = check_file_in_local_db(path_from, mtime_path_from)
 		if check_file_result["status"]:
 			msg = "File skipped: '{}'".format(path_from)
-			# msg = "File skipped"
 			return {"status": status, "msg": msg, "copied_files": copied_files}			
 		
 		file_name = os.path.basename(path_from)
@@ -202,10 +187,6 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 					status = "Error!"
 					msg = "Path 'to' is not a file: '{}'".format(path_to_new)
 					return {"status": status, "msg": msg, "copied_files": copied_files}
-				
-				# mtime_path_from = int(os.path.getmtime(path_from))
-				# mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
-				# mtime_path_from = mtime_path_from.astimezone(tzutc)
 			
 				mtime_path_to_new = y.get_meta(path_to_new, fields={"modified"})["modified"]
 				mtime_path_to_new = mtime_path_to_new.astimezone(tzutc)
