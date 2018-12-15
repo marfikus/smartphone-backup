@@ -109,16 +109,26 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			status = "Error!"
 			msg = "Path 'from' is not a file: '{}'".format(path_from)
 			return {"status": status, "msg": msg, "copied_files": copied_files}
+
+		mtime_path_from = int(os.path.getmtime(path_from))
+		mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
+		mtime_path_from = mtime_path_from.astimezone(tzutc)
 		
+		check_file_result = check_file_in_local_db(path_from, mtime_path_from)
+		if check_file_result["status"]:
+			msg = "File skipped: '{}'".format(path_from)
+			# msg = "File skipped"
+			return {"status": status, "msg": msg, "copied_files": copied_files}	
+			
 		if y.exists(path_to):
 			if not y.is_file(path_to):
 				status = "Error!"
 				msg = "Path 'to' is not a file: '{}'".format(path_to)
 				return {"status": status, "msg": msg, "copied_files": copied_files}
 			
-			mtime_path_from = int(os.path.getmtime(path_from))
-			mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
-			mtime_path_from = mtime_path_from.astimezone(tzutc)
+			# mtime_path_from = int(os.path.getmtime(path_from))
+			# mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
+			# mtime_path_from = mtime_path_from.astimezone(tzutc)
 			# print(mtime_path_from)
 			
 			# mtime_path_to = int(os.path.getmtime(path_to))
@@ -132,6 +142,9 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				# shutil.copy(path_from, path_to)
 				y.upload(path_from, path_to, overwrite=True)
 				copied_files += 1
+				
+			write_file_to_local_db(path_from, mtime_path_from, check_file_result["local_db"])
+			# if 'local_db' is empty(lost or irrelevant), but files in 'path_to' is exists			
 		else:
 			f_path, f_name = os.path.split(path_to)
 			if f_name == "": # for example, if path_to = 'dir1\dir2\'
@@ -154,6 +167,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			# shutil.copy(path_from, path_to)
 			y.upload(path_from, path_to)
 			copied_files += 1
+			write_file_to_local_db(path_from, mtime_path_from, check_file_result["local_db"])
 	
 	elif op_type == "fd":
 		# print("file-dir")
@@ -184,6 +198,11 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				return {"status": status, "msg": msg, "copied_files": copied_files}
 			
 			if y.exists(path_to_new):
+				# if not y.is_file(path_to_new):
+					# status = "Error!"
+					# msg = "Path 'to' is not a file: '{}'".format(path_to_new)
+					# return {"status": status, "msg": msg, "copied_files": copied_files}
+				
 				# mtime_path_from = int(os.path.getmtime(path_from))
 				# mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 				# mtime_path_from = mtime_path_from.astimezone(tzutc)
