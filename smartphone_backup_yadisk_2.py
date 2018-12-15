@@ -234,14 +234,17 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		# print("list_path_from: ", list_path_from)
 		# print("len(list_path_from): ", len(list_path_from))
 		
-		if len(list_path_from) == 0:
+		len_objects = len(list_path_from)
+		if len_objects == 0:
 			# print("path_to: ", path_to)
 			if not y.exists(path_to):
-				print("Create path: ", path_to)
+				print("Empty folder. Create path: ", path_to)
 				# os.makedirs(path_to)
 				make_dirs_yadisk(path_to)
 		
+		cur_obj = 1
 		for obj in list_path_from:
+			print("Object {0} of {1}:".format(cur_obj, len_objects))
 			print("obj: ", obj)
 			path_from_obj = os.path.join(path_from, obj)
 			path_from_obj = os.path.normpath(path_from_obj)
@@ -262,6 +265,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				status = "Error!"
 				msg = "The object is not supported: '{}'".format(path_from_obj)
 				return {"status": status, "msg": msg, "copied_files": copied_files}
+			cur_obj += 1
 			print("-----------------------------------------------")
 			
 	else:
@@ -278,10 +282,14 @@ if not y.check_token():
 	print("Token is False!")
 	quit()
 
+cur_task = 1
+len_tasks = len(mid.list_of_paths)
 for i in mid.list_of_paths:
 	print("===============================================")
+	print("Task {0} of {1}:".format(cur_task, len_tasks))
 	print(i)
 	res = copy_with_replace_by_date(i[0], i[1], i[2])
 	print(res)
+	cur_task += 1
 	print("===============================================")
 
