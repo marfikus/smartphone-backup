@@ -287,8 +287,8 @@ if not y.check_token():
 	quit()
 
 cur_task = 1
-len_tasks = len(mid.list_of_paths)
-for i in mid.list_of_paths:
+len_tasks = len(mid.list_of_tasks)
+for i in mid.list_of_tasks:
 	print("===============================================")
 	print("Task {0} of {1}:".format(cur_task, len_tasks))
 	print(i)
