@@ -110,6 +110,11 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 				return {"status": status, "msg": msg, "copied_files": copied_files}
 			
 			if y.exists(path_to_new):
+				if not y.is_file(path_to_new):
+					status = "Error!"
+					msg = "Path 'to' is not a file: '{}'".format(path_to_new)
+					return {"status": status, "msg": msg, "copied_files": copied_files}
+			
 				mtime_path_from = int(os.path.getmtime(path_from))
 				mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 				mtime_path_from = mtime_path_from.astimezone(tzutc)
