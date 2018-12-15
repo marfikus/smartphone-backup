@@ -39,7 +39,7 @@ def check_file_in_local_db(path, mtime):
 	status = True
 	
 	if not os.path.exists(file_name_local_db):
-		print("File db not exists!", file_name_local_db)
+		print("\nFile local_db not found!", file_name_local_db)
 		# return False
 		status = False
 		return {"status": status, "local_db": local_db}
@@ -53,7 +53,7 @@ def check_file_in_local_db(path, mtime):
 	print("path: ", path)
 	
 	if path not in local_db:
-		print("file is not in local_db!")
+		print("\nFile is not in local_db!")
 		# return False
 		status = False
 		return {"status": status, "local_db": local_db}
@@ -62,7 +62,7 @@ def check_file_in_local_db(path, mtime):
 	# print("mtime_from_db: ", mtime_from_db)
 	
 	if mtime > mtime_from_db:
-		print("rewrite is necessary!")
+		print("\nRewrite is necessary!")
 		# return False
 		status = False
 		return {"status": status, "local_db": local_db}
@@ -86,7 +86,7 @@ def write_file_to_local_db(path, mtime, local_db):
 	f.close()
 
 	
-def copy_with_replace_by_date(path_from, path_to, op_type):
+def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths):
 	status = "Ok"
 	msg = ""
 	copied_files = 0
@@ -95,6 +95,10 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		status = "Error!"
 		msg = "Path 'from' not found: '{}'".format(path_from)
 		return {"status": status, "msg": msg, "copied_files": copied_files}
+		
+	if path_from in set_of_ignored_paths:
+		msg = "Path is ignored: '{}'".format(path_from)
+		return {"status": status, "msg": msg, "copied_files": copied_files}
 	
 	if op_type == "ff":
 		# print("file-file")
@@ -102,7 +106,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			status = "Error!"
 			msg = "Path 'from' is not a file: '{}'".format(path_from)
 			return {"status": status, "msg": msg, "copied_files": copied_files}
-
+			
 		mtime_path_from = int(os.path.getmtime(path_from))
 		mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 		mtime_path_from = mtime_path_from.astimezone(tzutc)
@@ -161,7 +165,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 			status = "Error!"
 			msg = "Path 'from' is not a file: '{}'".format(path_from)
 			return {"status": status, "msg": msg, "copied_files": copied_files}
-		
+			
 		mtime_path_from = int(os.path.getmtime(path_from))
 		mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 		mtime_path_from = mtime_path_from.astimezone(tzutc)
@@ -245,19 +249,19 @@ def copy_with_replace_by_date(path_from, path_to, op_type):
 		cur_obj = 1
 		for obj in list_path_from:
 			print("Object {0} of {1}:".format(cur_obj, len_objects))
-			print("obj: ", obj)
+			# print("obj: ", obj)
 			path_from_obj = os.path.join(path_from, obj)
 			path_from_obj = os.path.normpath(path_from_obj)
 			if os.path.isfile(path_from_obj):
-				# print("file")
-				res = copy_with_replace_by_date(path_from_obj, path_to, "fd")
+				print("obj: {} (file)".format(obj))
+				res = copy_with_replace_by_date(path_from_obj, path_to, "fd", set_of_ignored_paths)
 				print(res)
 				copied_files += res["copied_files"]
 			elif os.path.isdir(path_from_obj):
-				# print("dir")
+				print("obj: {} (dir)".format(obj))
 				path_to_obj = posixpath.join(path_to, obj)
 				path_to_obj = posixpath.normpath(path_to_obj)
-				res = copy_with_replace_by_date(path_from_obj, path_to_obj, "dd")
+				res = copy_with_replace_by_date(path_from_obj, path_to_obj, "dd", set_of_ignored_paths)
 				print(res)
 				copied_files += res["copied_files"]
 			else:
@@ -288,7 +292,7 @@ for i in mid.list_of_paths:
 	print("===============================================")
 	print("Task {0} of {1}:".format(cur_task, len_tasks))
 	print(i)
-	res = copy_with_replace_by_date(i[0], i[1], i[2])
+	res = copy_with_replace_by_date(i[0], i[1], i[2], mid.set_of_ignored_paths)
 	print(res)
 	cur_task += 1
 	print("===============================================")
