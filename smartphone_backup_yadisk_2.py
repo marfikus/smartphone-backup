@@ -1,11 +1,11 @@
 
-# import sys
 import yadisk
 import os
 import datetime
 from dateutil.tz import tzutc
 import shutil
 import my_input_data as mid
+import connect_data
 import posixpath
 import pickle
 
@@ -280,7 +280,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 	return {"status": status, "msg": msg, "copied_files": copied_files}
 
 	
-y = yadisk.YaDisk(token=mid.token)
+y = yadisk.YaDisk(token=connect_data.token)
 
 if not y.check_token():
 	print("Token is False!")
