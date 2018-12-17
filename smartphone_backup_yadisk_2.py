@@ -39,7 +39,7 @@ def check_file_in_local_db(path, mtime):
 	status = True
 	
 	if not os.path.exists(file_name_local_db):
-		print("\nFile local_db not found!", file_name_local_db)
+		print("File '{}' not found!\n".format(file_name_local_db))
 		# return False
 		status = False
 		return {"status": status, "local_db": local_db}
@@ -53,7 +53,7 @@ def check_file_in_local_db(path, mtime):
 	print("path: ", path)
 	
 	if path not in local_db:
-		print("\nFile is not in local_db!")
+		print("Path is not in local_db!\n")
 		# return False
 		status = False
 		return {"status": status, "local_db": local_db}
@@ -62,7 +62,7 @@ def check_file_in_local_db(path, mtime):
 	# print("mtime_from_db: ", mtime_from_db)
 	
 	if mtime > mtime_from_db:
-		print("\nRewrite is necessary!")
+		print("Rewrite is necessary!\n")
 		# return False
 		status = False
 		return {"status": status, "local_db": local_db}
