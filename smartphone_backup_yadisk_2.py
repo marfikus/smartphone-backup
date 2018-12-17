@@ -10,7 +10,8 @@ import posixpath
 import pickle
 
 tzutc = tzutc()
-# local_db = {}
+local_db = {}
+file_name_local_db = "local_db"
 
 def make_dirs_yadisk(path):
 	# print(path)
@@ -33,20 +34,17 @@ def make_dirs_yadisk(path):
 	
 def check_file_in_local_db(path, mtime):
 	# print("check:")
-	file_name_local_db = "local_db"
-	# global local_db
-	local_db = {}
-	status = True
+	global local_db, file_name_local_db
 	
-	if not os.path.exists(file_name_local_db):
-		print("File '{}' not found!\n".format(file_name_local_db))
-		# return False
-		status = False
-		return {"status": status, "local_db": local_db}
-		
-	f = open(file_name_local_db, "rb")
-	local_db = pickle.load(f)
-	f.close()
+	if len(local_db) == 0:
+		if not os.path.exists(file_name_local_db):
+			print("File '{}' not found!\n".format(file_name_local_db))
+			return False
+			
+		print("loading local_db")
+		f = open(file_name_local_db, "rb")
+		local_db = pickle.load(f)
+		f.close()
 	
 	# for i in local_db:
 		# print(i, local_db[i])
@@ -54,26 +52,21 @@ def check_file_in_local_db(path, mtime):
 	
 	if path not in local_db:
 		print("Path is not in local_db!\n")
-		# return False
-		status = False
-		return {"status": status, "local_db": local_db}
+		return False
 	
 	mtime_from_db = local_db[path]
 	# print("mtime_from_db: ", mtime_from_db)
 	
 	if mtime > mtime_from_db:
 		print("Rewrite is necessary!\n")
-		# return False
-		status = False
-		return {"status": status, "local_db": local_db}
+		return False
 		
-	# return True
-	return {"status": status, "local_db": local_db}
+	return True
 
-	
-def write_file_to_local_db(path, mtime, local_db):
+
+def write_file_to_local_db(path, mtime):
 	# print("write to db:")
-	file_name_local_db = "local_db"
+	global local_db, file_name_local_db
 
 	local_db[path] = mtime
 	# local_db.update(path=mtime)
@@ -110,12 +103,10 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 		mtime_path_from = int(os.path.getmtime(path_from))
 		mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 		mtime_path_from = mtime_path_from.astimezone(tzutc)
-		
-		check_file_result = check_file_in_local_db(path_from, mtime_path_from)
-		if check_file_result["status"]:
+			
+		if check_file_in_local_db(path_from, mtime_path_from):
 			msg = "File skipped: '{}'".format(path_from)
-			# msg = "File skipped"
-			return {"status": status, "msg": msg, "copied_files": copied_files}	
+			return {"status": status, "msg": msg, "copied_files": copied_files}		
 			
 		if y.exists(path_to):
 			if not y.is_file(path_to):
@@ -133,7 +124,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 				y.upload(path_from, path_to, overwrite=True)
 				copied_files += 1
 				
-			write_file_to_local_db(path_from, mtime_path_from, check_file_result["local_db"])
+			write_file_to_local_db(path_from, mtime_path_from)
 			# if 'local_db' is empty(lost or irrelevant), but files in 'path_to' is exists			
 		else:
 			f_path, f_name = os.path.split(path_to)
@@ -157,7 +148,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 			# shutil.copy(path_from, path_to)
 			y.upload(path_from, path_to)
 			copied_files += 1
-			write_file_to_local_db(path_from, mtime_path_from, check_file_result["local_db"])
+			write_file_to_local_db(path_from, mtime_path_from)
 	
 	elif op_type == "fd":
 		# print("file-dir")
@@ -170,8 +161,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 		mtime_path_from = datetime.datetime.fromtimestamp(mtime_path_from)
 		mtime_path_from = mtime_path_from.astimezone(tzutc)
 		
-		check_file_result = check_file_in_local_db(path_from, mtime_path_from)
-		if check_file_result["status"]:
+		if check_file_in_local_db(path_from, mtime_path_from):
 			msg = "File skipped: '{}'".format(path_from)
 			return {"status": status, "msg": msg, "copied_files": copied_files}			
 		
@@ -202,14 +192,14 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 					copied_files += 1
 					# write_file_to_local_db(path_from, mtime_path_from)
 					
-				write_file_to_local_db(path_from, mtime_path_from, check_file_result["local_db"])
+				write_file_to_local_db(path_from, mtime_path_from)
 				# if 'local_db' is empty(lost or irrelevant), but files in 'path_to' is exists
 			else:
 				print("file-dir: write")
 				# shutil.copy(path_from, path_to_new)
 				y.upload(path_from, path_to_new)
 				copied_files += 1
-				write_file_to_local_db(path_from, mtime_path_from, check_file_result["local_db"])
+				write_file_to_local_db(path_from, mtime_path_from)
 		else:
 			# print("'path_to' not exists")
 			print("Create path: ", path_to)
@@ -219,7 +209,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 			# shutil.copy(path_from, path_to)
 			y.upload(path_from, path_to_new)
 			copied_files += 1
-			write_file_to_local_db(path_from, mtime_path_from, check_file_result["local_db"])
+			write_file_to_local_db(path_from, mtime_path_from)
 		
 	elif op_type == "df":
 		print("dir-file")
