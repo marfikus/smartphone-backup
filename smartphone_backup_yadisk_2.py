@@ -276,6 +276,7 @@ if not y.check_token():
 	print("Token is False!")
 	quit()
 
+sum_copied_files = 0
 cur_task = 1
 len_tasks = len(mid.list_of_tasks)
 for i in mid.list_of_tasks:
@@ -284,6 +285,8 @@ for i in mid.list_of_tasks:
 	print(i)
 	res = copy_with_replace_by_date(i[0], i[1], i[2], mid.set_of_ignored_paths)
 	print(res)
+	sum_copied_files += res["copied_files"]
 	cur_task += 1
 	print("===============================================")
-
+print("Total files copied: ",  sum_copied_files)
+	
