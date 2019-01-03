@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+
+test_dir_from/
+test_dir_to/
+smartphone_backup.py
+
+connect_data.py
+my_input_data.py
+local_db
