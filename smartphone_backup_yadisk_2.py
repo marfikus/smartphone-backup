@@ -83,6 +83,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 	status = "Ok"
 	msg = ""
 	copied_files = 0
+	global task_errors
 	
 	if not os.path.exists(path_from):
 		status = "Error!"
@@ -247,6 +248,8 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 				res = copy_with_replace_by_date(path_from_obj, path_to, "fd", set_of_ignored_paths)
 				print(res)
 				copied_files += res["copied_files"]
+				if res["status"] == "Error!":
+					task_errors.append(res)
 			elif os.path.isdir(path_from_obj):
 				print("obj: {} (dir)".format(obj))
 				path_to_obj = posixpath.join(path_to, obj)
@@ -254,6 +257,8 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 				res = copy_with_replace_by_date(path_from_obj, path_to_obj, "dd", set_of_ignored_paths)
 				print(res)
 				copied_files += res["copied_files"]
+				if res["status"] == "Error!":
+					task_errors.append(res)
 			else:
 				# print("The object is not supported: ", path_from_obj)
 				status = "Error!"
@@ -276,6 +281,9 @@ if not y.check_token():
 	print("Token is False!")
 	quit()
 
+task_errors = []
+general_report = []
+
 sum_copied_files = 0
 cur_task = 1
 len_tasks = len(mid.list_of_tasks)
@@ -286,7 +294,21 @@ for i in mid.list_of_tasks:
 	res = copy_with_replace_by_date(i[0], i[1], i[2], mid.set_of_ignored_paths)
 	print(res)
 	sum_copied_files += res["copied_files"]
+	general_report.append([i, res, task_errors.copy()])
+	task_errors.clear()
 	cur_task += 1
 	print("===============================================")
-print("Total files copied: ",  sum_copied_files)
+	
+print("\nGeneral report:")
+for i in general_report:
+	print("===============================================")
+	print("Task:", i[0])
+	print("Result:", i[1])
+	error_count = len(i[2])
+	print("Internal errors:", error_count)
+	if error_count > 0:
+		for j in i[2]:
+			print(j)
+	print("===============================================")
+print("Total files copied:",  sum_copied_files)
 	
