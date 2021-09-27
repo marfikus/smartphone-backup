@@ -8,3 +8,5 @@ smartphone_backup.py
 connect_data.py
 my_input_data.py
 local_db
+get_token.py
+get_token_auto.py
