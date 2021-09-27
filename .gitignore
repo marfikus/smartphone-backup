@@ -10,3 +10,6 @@ my_input_data.py
 local_db
 get_token.py
 get_token_auto.py
+
+tests_with_files/
+sqlite/
