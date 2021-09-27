@@ -243,6 +243,15 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 			# print("obj: ", obj)
 			path_from_obj = os.path.join(path_from, obj)
 			path_from_obj = os.path.normpath(path_from_obj)
+
+			# if the file was deleted during directory copying
+			if not os.path.exists(path_from_obj):
+				res = {"status": "Error!", "msg": "Path not found: '{}'".format(path_from_obj), "copied_files": 0, "tag": "fake return"}
+				task_errors.append(res)
+				cur_obj += 1
+				continue 
+				# just skipped this file but didn't stop the task
+
 			if os.path.isfile(path_from_obj):
 				print("obj: {} (file)".format(obj))
 				res = copy_with_replace_by_date(path_from_obj, path_to, "fd", set_of_ignored_paths)
@@ -260,10 +269,10 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 				if res["status"] == "Error!":
 					task_errors.append(res)
 			else:
-				# print("The object is not supported: ", path_from_obj)
-				status = "Error!"
-				msg = "The object is not supported: '{}'".format(path_from_obj)
-				return {"status": status, "msg": msg, "copied_files": copied_files}
+				res = {"status": "Error!", "msg": "The object is not supported: '{}'".format(path_from_obj), "copied_files": 0, "tag": "fake return"}
+				task_errors.append(res)
+				# just skipped this file but didn't stop the task
+				
 			cur_obj += 1
 			print("-----------------------------------------------")
 			
