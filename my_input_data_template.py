@@ -1,5 +1,5 @@
 
-# rename file before use: 'my_input_data_template.py' > 'my_input_data.py'
+# rename file before use: 'my_input_data_template.py' to 'my_input_data.py'
 
 list_of_tasks = [
 # structure hint: [path_from, path_to, op_type("ff"|"fd"|"df"|"dd")]
