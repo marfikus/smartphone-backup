@@ -189,7 +189,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 				if mtime_path_from > mtime_path_to_new:
 					print("file-dir: rewrite")
 					# shutil.copy(path_from, path_to_new)
-					y.upload(path_from, path_to_new, overwrite=True)
+					y.upload(path_from, path_to_new, overwrite=True, timeout=120.0)
 					copied_files += 1
 					# write_file_to_local_db(path_from, mtime_path_from)
 					
@@ -198,7 +198,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 			else:
 				print("file-dir: write")
 				# shutil.copy(path_from, path_to_new)
-				y.upload(path_from, path_to_new)
+				y.upload(path_from, path_to_new, timeout=120.0)
 				copied_files += 1
 				write_file_to_local_db(path_from, mtime_path_from)
 		else:
@@ -208,7 +208,7 @@ def copy_with_replace_by_date(path_from, path_to, op_type, set_of_ignored_paths)
 			make_dirs_yadisk(path_to)
 			print("file-dir: write")
 			# shutil.copy(path_from, path_to)
-			y.upload(path_from, path_to_new)
+			y.upload(path_from, path_to_new, timeout=120.0)
 			copied_files += 1
 			write_file_to_local_db(path_from, mtime_path_from)
 		
